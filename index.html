@@ -287,20 +287,65 @@
       alert("📄 Plantilla descargada exitosamente");
     }
 
-    function descargarExcel() {
-      if (!fichasGeneradas.length) {
-        alert("No hay fichas generadas para exportar.");
-        return;
-      }
-      const data = fichasGeneradas.map(f => ({ SKU: f.sku || "", HTML: f.html }));
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Fichas");
-      XLSX.writeFile(wb, "Fichas_Generadas.xlsx");
-      alert("⬇️ Archivo Excel exportado exitosamente");
+    
+function descargarExcel() {
+  if (!fichasGeneradas.length) {
+    alert("No hay fichas generadas para exportar.");
+    return;
+  }
+
+  const data = fichasGeneradas.map(f => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(f.html, 'text/html');
+    const container = doc.querySelector('.categoria-export');
+
+    container.setAttribute("style", "background-color:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:20px;margin-bottom:30px;font-size:15px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;");
+
+    const ul = container.querySelector("ul");
+    if (ul) ul.setAttribute("style", "text-align:left;background:#f5f5f5;padding:10px;border-radius:5px;list-style:none;padding-left:20px;margin:0;");
+
+    const lis = container.querySelectorAll("ul li");
+    lis.forEach(li => {
+      li.setAttribute("style", "position:relative;padding-left:20px;margin-bottom:8px;");
+      li.innerHTML = `<span style='position:absolute;left:0;color:#555;'>&bull;</span>${li.innerHTML}`;
+    });
+
+    const p = container.querySelector("p");
+    if (p) p.setAttribute("style", "text-align:left;margin:0;");
+
+    const imgMain = container.querySelector(".image-main img");
+    if (imgMain) {
+      imgMain.setAttribute("style", "width:100%;max-width:600px;height:auto;display:block;margin:0 auto;");
     }
 
-    function limpiarTodo() {
+    const imageCols = container.querySelector(".image-columns");
+    if (imageCols) {
+      imageCols.removeAttribute("class");
+      imageCols.setAttribute("style", "display:flex;flex-wrap:wrap;gap:10px;margin-top:15px;");
+      const imgs = imageCols.querySelectorAll("img");
+      imgs.forEach(img => {
+        img.setAttribute("style", "width:calc(50% - 5px);max-width:100%;height:auto;border-radius:8px;object-fit:cover;aspect-ratio:1/1;");
+      });
+    }
+
+    let htmlExportado = container.outerHTML.trim();
+    htmlExportado = htmlExportado.replace(/"(.*?)"/g, "'$1'");
+
+    return {
+      SKU: f.sku || "",
+      HTML: htmlExportado
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Fichas");
+  XLSX.writeFile(wb, "Fichas_Generadas.xlsx");
+  alert("⬇️ Archivo Excel exportado exitosamente");
+}
+
+
+function limpiarTodo() {
       document.getElementById("excelInput").value = "";
       document.getElementById("skuUnit").value = "";
       document.getElementById("nombreUnit").value = "";
