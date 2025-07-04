@@ -165,6 +165,7 @@
       <p>📅 <strong>Procesar Excel:</strong> Sube un archivo Excel con los productos para generar automáticamente las fichas. Asegúrate de que contenga los siguientes campos: <em>SKU, Nombre, Tipo, Marca, Beneficios, Información adicional, URL Imagen</em>.</p>
       <p>📄 <strong>Descargar Plantilla:</strong> Puedes descargar una plantilla de ejemplo para completar correctamente.</p>
       <p>📝 <strong>Formulario Unitario:</strong> También puedes ingresar productos de forma individual usando el formulario más abajo.</p>
+      <p>🔵 <strong>Color del Título:</strong> Solo se permiten los valores <em>Negro</em>, <em>Azul</em> o <em>Rosa</em> en este campo.</p>
     </div>
 
     <div class="attribute-group">
@@ -225,6 +226,28 @@
           <option value="negro">Negro</option>
         </select>
       </div>
+      
+      
+      <div class="full-width">
+        <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+<h4 style="font-size: 16px; color: #007bff; font-weight: normal; margin-bottom: 10px;">✨ Selecciona 1 o varios atributos diferenciadores</h4>
+        <div id="checkboxDiferenciadores" style="display: flex; flex-wrap: wrap; gap: 10px;">
+<style>#checkboxDiferenciadores label { font-weight: normal; }</style>
+          <label><input type="checkbox" value="Cruelty Free"> Cruelty Free</label>
+          <label><input type="checkbox" value="Libre de Pesticidas"> Libre de Pesticidas</label>
+          <label><input type="checkbox" value="No Probado en Animales"> No Probado en Animales</label>
+          <label><input type="checkbox" value="No Toxico"> No Toxico</label>
+          <label><input type="checkbox" value="Probado Lab"> Probado Lab</label>
+          <label><input type="checkbox" value="Sin Aceite"> Sin Aceite</label>
+          <label><input type="checkbox" value="Sin Parabenos"> Sin Parabenos</label>
+          <label><input type="checkbox" value="Sin Sulfatos"> Sin Sulfatos</label>
+          <label><input type="checkbox" value="Vegano"> Vegano</label>
+        </div>
+      </div>
+
+        
+      </div>
+
       <div class="full-width button-group">
         <button id="btnAgregar">Ver Tabla</button>
       </div>
@@ -255,7 +278,31 @@
         rows.forEach(item => {
           const colorNombre = (item["Color del Título"] || "").toLowerCase();
           const color = coloresPermitidos[colorNombre] || "#000000";
-          const beneficiosHTML = item["Beneficios"] ? `<ul>${item["Beneficios"].split(",").map(b => `<li>${b.trim()}</li>`).join("")}</ul>` : "";
+
+      const diferenciadores = Array.from(document.querySelectorAll("#checkboxDiferenciadores input:checked")).map(c => c.value);
+      const iconosMap = {
+        "Cruelty Free": "images/Contenido%20Fichas/Diferenciadores/icono-crueltyfree.png?$staticlink$",
+        "Libre de Pesticidas": "images/Contenido%20Fichas/Diferenciadores/icono-libre-pesticidas.png?$staticlink$",
+        "No Probado en Animales": "images/Contenido%20Fichas/Diferenciadores/icono-no-probado-animales.png?$staticlink$",
+        "No Toxico": "images/Contenido%20Fichas/Diferenciadores/icono-no-toxico.png?$staticlink$",
+        "Probado Lab": "images/Contenido%20Fichas/Diferenciadores/icono-probado-lab.png?$staticlink$",
+        "Sin Aceite": "images/Contenido%20Fichas/Diferenciadores/icono-sin-aceite.png?$staticlink$",
+        "Sin Parabenos": "images/Contenido%20Fichas/Diferenciadores/icono-sin-parabenos.png?$staticlink$",
+        "Sin Sulfatos": "images/Contenido%20Fichas/Diferenciadores/icono-sin-sulfatos.png?$staticlink$",
+        "Vegano": "images/Contenido%20Fichas/Diferenciadores/icono-vegano.png?$staticlink$"
+      };
+      const iconosHTML = diferenciadores.length > 0
+        ? `<div style='display:flex;gap:10px;flex-wrap:wrap;'>${diferenciadores.map(d => `<img src='${iconosMap[d]}' alt='${d}' style='width:80px;height:80px;max-width:100%;height:auto;object-fit:contain;'>`).join("")}</div>`
+        : "";
+
+          const beneficiosHTML = item["Beneficios"]
+  ? `<ul>${item["Beneficios"].split(",").map(b => {
+      const [antes, despues] = b.split(":");
+      return despues
+        ? `<li><strong>${antes.trim()}:</strong> ${despues.trim()}</li>`
+        : `<li>${b.trim()}</li>`;
+    }).join("")}</ul>`
+  : "";
           const imagenesHTML = `
             ${item["URL Imagen"] ? `<div class='image-main'><img src='${item["URL Imagen"]}'></div>` : ""}
             <div class='image-columns'>
@@ -266,6 +313,7 @@
             <div class='categoria-export'>
               <h3 style='color:${color}'>${item["Nombre"] || ""} ${item["Marca"] || ""}</h3>
               ${beneficiosHTML}
+          ${iconosHTML}
               <p>${item["Información adicional"] || ""}</p>
               ${imagenesHTML}
             </div>
@@ -307,7 +355,13 @@ function descargarExcel() {
     const lis = container.querySelectorAll("ul li");
     lis.forEach(li => {
       li.setAttribute("style", "position:relative;padding-left:20px;margin-bottom:8px;");
-      li.innerHTML = `<span style='position:absolute;left:0;color:#555;'>&bull;</span>${li.innerHTML}`;
+      const texto = li.innerHTML;
+      if (texto.includes(":")) {
+        const [antes, despues] = texto.split(":");
+        li.innerHTML = `<span style='position:absolute;left:0;color:#555;'>&bull;</span><strong>${antes.trim()}:</strong> ${despues.trim()}`;
+      } else {
+        li.innerHTML = `<span style='position:absolute;left:0;color:#555;'>&bull;</span>${texto.trim()}`;
+      }
     });
 
     const p = container.querySelector("p");
@@ -375,7 +429,31 @@ function limpiarTodo() {
       const colorNombre = document.getElementById("colorUnit").value.toLowerCase();
       const color = coloresPermitidos[colorNombre] || "#000000";
 
-      const beneficiosHTML = beneficios ? `<ul>${beneficios.split(",").map(b => `<li>${b.trim()}</li>`).join("")}</ul>` : "";
+      const diferenciadores = Array.from(document.querySelectorAll("#checkboxDiferenciadores input:checked")).map(c => c.value);
+      const iconosMap = {
+        "Cruelty Free": "images/Contenido%20Fichas/Diferenciadores/icono-crueltyfree.png?$staticlink$",
+        "Libre de Pesticidas": "images/Contenido%20Fichas/Diferenciadores/icono-libre-pesticidas.png?$staticlink$",
+        "No Probado en Animales": "images/Contenido%20Fichas/Diferenciadores/icono-no-probado-animales.png?$staticlink$",
+        "No Toxico": "images/Contenido%20Fichas/Diferenciadores/icono-no-toxico.png?$staticlink$",
+        "Probado Lab": "images/Contenido%20Fichas/Diferenciadores/icono-probado-lab.png?$staticlink$",
+        "Sin Aceite": "images/Contenido%20Fichas/Diferenciadores/icono-sin-aceite.png?$staticlink$",
+        "Sin Parabenos": "images/Contenido%20Fichas/Diferenciadores/icono-sin-parabenos.png?$staticlink$",
+        "Sin Sulfatos": "images/Contenido%20Fichas/Diferenciadores/icono-sin-sulfatos.png?$staticlink$",
+        "Vegano": "images/Contenido%20Fichas/Diferenciadores/icono-vegano.png?$staticlink$"
+      };
+      const iconosHTML = diferenciadores.length > 0
+        ? `<div style='display:flex;gap:10px;flex-wrap:wrap;'>${diferenciadores.map(d => `<img src='${iconosMap[d]}' alt='${d}' style='width:80px;height:80px;max-width:100%;height:auto;object-fit:contain;'>`).join("")}</div>`
+        : "";
+
+
+      const beneficiosHTML = beneficios
+  ? `<ul>${beneficios.split(",").map(b => {
+      const [antes, despues] = b.split(":");
+      return despues
+        ? `<li><strong>${antes.trim()}:</strong> ${despues.trim()}</li>`
+        : `<li>${b.trim()}</li>`;
+    }).join("")}</ul>`
+  : "";
       const imagenesHTML = `
         ${img1 ? `<div class='image-main'><img src='${img1}'></div>` : ""}
         <div class='image-columns'>
@@ -387,6 +465,7 @@ function limpiarTodo() {
         <div class='categoria-export'>
           <h3 style='color:${color}'>${nombre} ${marca}</h3>
           ${beneficiosHTML}
+          ${iconosHTML}
           <p>${info}</p>
           ${imagenesHTML}
         </div>
