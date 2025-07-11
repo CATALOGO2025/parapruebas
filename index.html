@@ -601,7 +601,7 @@ function mostrarPreview(input, previewId) {
     contenedor.innerHTML = "";
 
     datosProcesados.slice(1).forEach((fila) => {
-      const [sku, nombre, tipo, marca, beneficios, infoAdicional, url1, url2, url3, logo, color, dif1, dif2, dif3, dif4] = fila;
+      const [sku, nombre, tipo, marca, beneficios, infoAdicional, logo, url1, url2, url3, color, dif1, dif2, dif3, dif4] = fila;
             const rutaLogo = logo
   ? (logo.startsWith("http") ? logo : `https://www.paris.cl/images/Contenido%20Fichas/Logos/${logo}?$staticlink$`)
   : "";
