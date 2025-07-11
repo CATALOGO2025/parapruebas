@@ -602,12 +602,16 @@ function mostrarPreview(input, previewId) {
 
     datosProcesados.slice(1).forEach((fila) => {
       const [sku, nombre, tipo, marca, beneficios, infoAdicional, logo, url1, url2, url3, color, dif1, dif2, dif3, dif4] = fila;
-            const rutaLogo = logo
+
+// Arma la URL del logo correctamente, solo si no es externa
+const rutaLogo = logo
   ? (logo.startsWith("http") ? logo : `https://www.paris.cl/images/Contenido%20Fichas/Logos/${logo}?$staticlink$`)
   : "";
-      const logoHTML = rutaLogo
-        ? `<img src=\"${rutaLogo}\" alt=\"Logo\" style=\"max-height:100px;width:auto;display:block;margin-top:8px;margin-bottom:12px;\">`
-        : "";
+
+// Inserta la etiqueta <img> solo si hay logo
+const logoHTML = rutaLogo
+  ? `<img src="${rutaLogo}" alt="Logo" style="max-height:100px;width:auto;display:block;margin-top:8px;margin-bottom:12px;">`
+  : "";
 const rutaImagen1 = completarRutaImagen(url1);
       const rutaImagen2 = completarRutaImagen(url2);
       const rutaImagen3 = completarRutaImagen(url3);
