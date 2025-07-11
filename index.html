@@ -420,8 +420,8 @@ url1, url2, url3, color, dif1, dif2, dif3, dif4
       };
       reader.readAsArrayBuffer(file);
     }
-
-    unction descargarPlantilla() {
+// Función que descarga la plantilla
+    function descargarPlantilla() {
   const link = document.createElement('a');
   link.href = "https://catalogo2025.github.io/creador-descripciones-largas/plantilla_tipo_descripciones.xlsx"; // URL actual del archivo en tu GitHub
   link.download = "plantilla_tipo_descripciones.xlsx"; // Nombre que tendrá el archivo al descargar
@@ -526,16 +526,6 @@ function mostrarPreview(input, previewId) {
 }
 
 </script>
-<script>
-    document.getElementById("btnPlantilla").addEventListener("click", function () {
-    const url = "https://catalogo2025.github.io/creador-descripciones-largas/plantilla_tipo_descripciones.xlsx";
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "plantilla_tipo_descripciones.xlsx";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  });
 
 function completarRutaImagen(valor) {
   if (!valor) return "";
