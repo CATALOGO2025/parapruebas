@@ -602,7 +602,9 @@ function mostrarPreview(input, previewId) {
 
     datosProcesados.slice(1).forEach((fila) => {
       const [sku, nombre, tipo, marca, beneficios, infoAdicional, url1, url2, url3, logo, color, dif1, dif2, dif3, dif4] = fila;
-            const rutaLogo = logo ? `https://www.paris.cl/images/Contenido%20Fichas/Logos/${logo}?$staticlink$` : "";
+            const rutaLogo = logo
+  ? (logo.startsWith("http") ? logo : `https://www.paris.cl/images/Contenido%20Fichas/Logos/${logo}?$staticlink$`)
+  : "";
       const logoHTML = rutaLogo
         ? `<img src='${rutaLogo}' alt='Logo' style='max-height:100px;width:auto;display:block;margin:5px 0;'>`
         : "";
