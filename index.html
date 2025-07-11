@@ -421,10 +421,10 @@ url1, url2, url3, color, dif1, dif2, dif3, dif4
       reader.readAsArrayBuffer(file);
     }
 
-    function descargarPlantilla() {
+    unction descargarPlantilla() {
   const link = document.createElement('a');
-  link.href = "plantilla_descripciones.xlsx"; // debe coincidir con el nombre del archivo subido
-  link.download = "plantilla_descripciones.xlsx";
+  link.href = "https://catalogo2025.github.io/creador-descripciones-largas/plantilla_tipo_descripciones.xlsx"; // URL actual del archivo en tu GitHub
+  link.download = "plantilla_tipo_descripciones.xlsx"; // Nombre que tendrá el archivo al descargar
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
