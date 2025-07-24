@@ -420,11 +420,11 @@ url1, url2, url3, color, dif1, dif2, dif3, dif4
       };
       reader.readAsArrayBuffer(file);
     }
-// Función que descarga la plantilla
+
     function descargarPlantilla() {
   const link = document.createElement('a');
-  link.href = "https://catalogo2025.github.io/creador-descripciones-largas/plantilla_tipo_descripciones.xlsx"; // URL actual del archivo en tu GitHub
-  link.download = "plantilla_tipo_descripciones.xlsx"; // Nombre que tendrá el archivo al descargar
+  link.href = "plantilla_descripciones.xlsx"; // debe coincidir con el nombre del archivo subido
+  link.download = "plantilla_descripciones.xlsx";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -511,8 +511,7 @@ function limpiarTodo() {
     document.getElementById("btnPlantilla").addEventListener("click", descargarPlantilla);
     document.getElementById("btnExportar").addEventListener("click", descargarExcel);
     document.getElementById("btnLimpiar").addEventListener("click", limpiarTodo);
-    
-<script>
+  
 function completarRutaImagen(valor) {
   if (!valor) return "";
   if (valor.startsWith("http")) return valor;
@@ -527,6 +526,16 @@ function mostrarPreview(input, previewId) {
 }
 
 </script>
+<script>
+  document.getElementById("btnPlantilla").addEventListener("click", function () {
+    const url = "https://catalogo2025.github.io/creador_descripciones_largas/Plantilla_Fichas_Diferenciadores_y_Color_VALIDADO.xlsx";
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "plantilla_descripciones.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
 
 function completarRutaImagen(valor) {
   if (!valor) return "";
@@ -592,18 +601,8 @@ function mostrarPreview(input, previewId) {
     contenedor.innerHTML = "";
 
     datosProcesados.slice(1).forEach((fila) => {
-      const [sku, nombre, tipo, marca, beneficios, infoAdicional, logo, url1, url2, url3, color, dif1, dif2, dif3, dif4] = fila;
-
-// Arma la URL del logo correctamente, solo si no es externa
-const rutaLogo = logo
-  ? (logo.startsWith("http") ? logo : `https://www.paris.cl/images/Contenido%20Fichas/Logos/${logo}?$staticlink$`)
-  : "";
-
-// Inserta la etiqueta <img> solo si hay logo
-const logoHTML = rutaLogo
-  ? `<img src="${rutaLogo}" alt="Logo" style="max-height:100px;width:auto;display:block;margin-top:8px;margin-bottom:12px;">`
-  : "";
-const rutaImagen1 = completarRutaImagen(url1);
+      const [sku, nombre, tipo, marca, beneficios, infoAdicional, url1, url2, url3, color, dif1, dif2, dif3, dif4] = fila;
+      const rutaImagen1 = completarRutaImagen(url1);
       const rutaImagen2 = completarRutaImagen(url2);
       const rutaImagen3 = completarRutaImagen(url3);
 
@@ -623,7 +622,7 @@ const rutaImagen1 = completarRutaImagen(url1);
       const html = `
           <div style='background:#eee;padding:5px 10px;border-radius:5px;font-size:13px;margin-bottom:5px;'>📦 SKU: ${sku}</div>
         <div class="categoria-export" style="background:white;padding:15px;border-radius:8px;margin-bottom:25px;font-size:15px;">
-          <h3 style="color:${colorMap[color?.toLowerCase()] || '#000'}">${nombre || "Sin nombre"} ${marca ? `- ${marca}` : ""}</h3>\n          ${logoHTML}
+          <h3 style="color:${colorMap[color?.toLowerCase()] || '#000'}">${nombre || "Sin nombre"} ${marca ? `- ${marca}` : ""}</h3>
           ${beneficiosLista}
           
            ${iconos ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;">${iconos}</div>` : ""}
@@ -666,5 +665,63 @@ function mostrarPreview(input, previewId) {
     if (contador) contador.textContent = num;
   }
 </script>
+<!-- INICIO DEL CÓDIGO MODIFICADO -->
+<!-- Este bloque reemplaza la función mostrarTablaDesdeExcel y agrega el campo de video YouTube -->
+<script>
+  function transformarURL(url) {
+    if (!url) return "";
+    const videoIdMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([\w-]{11})/);
+    const videoId = videoIdMatch ? videoIdMatch[1] : null;
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+  }
+
+  function mostrarTablaDesdeExcel() {
+    const contenedor = document.getElementById("descripcionFinal");
+    contenedor.innerHTML = "";
+
+    datosProcesados.slice(1).forEach((fila) => {
+      const [sku, nombre, tipo, marca, beneficios, infoAdicional, url1, url2, url3, color, dif1, dif2, dif3, dif4, videoUrl] = fila;
+      const rutaImagen1 = completarRutaImagen(url1);
+      const rutaImagen2 = completarRutaImagen(url2);
+      const rutaImagen3 = completarRutaImagen(url3);
+      const rutaVideo = transformarURL((videoUrl || "").toString().trim());
+
+      const beneficiosItems = beneficios?.split(";").map(b => `<li>${b.trim()}</li>`).join("") || "";
+      const beneficiosLista = beneficiosItems
+        ? `<strong>Características:</strong><ul style="background:#f5f5f5;padding:10px;border-radius:5px;list-style:none;padding-left:20px;">${beneficiosItems}</ul>`
+        : "";
+
+      const iconos = [dif1, dif2, dif3, dif4].filter(Boolean).map(valor => {
+        const src = rutasIconos[valor.trim()];
+        return src ? `<img src="${src}" alt="${valor}" style="width:80px;height:80px;object-fit:contain;">` : '';
+      }).join("");
+
+      const html = `
+        <div style='background:#eee;padding:5px 10px;border-radius:5px;font-size:13px;margin-bottom:5px;'>📦 SKU: ${sku}</div>
+        <div class="categoria-export" style="background:white;padding:15px;border-radius:8px;margin-bottom:25px;font-size:15px;">
+          <h3 style="color:${colorMap[color?.toLowerCase()] || '#000'}">${nombre || "Sin nombre"} ${marca ? `- ${marca}` : ""}</h3>
+          ${beneficiosLista}
+          ${iconos ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;">${iconos}</div>` : ""}
+          ${infoAdicional ? `<p>${infoAdicional}</p>` : ""}
+          ${rutaVideo ? `
+            <div style="margin:20px 0 10px 0;">
+              <iframe width="100%" height="315" src="${rutaVideo}" frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+              </iframe>
+            </div>` : ""}
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">
+            ${rutaImagen1 ? `<img src="${rutaImagen1}" style="max-width:100%;height:auto;">` : ''}
+            ${rutaImagen2 ? `<img src="${rutaImagen2}" style="width:48%;height:auto;">` : ''}
+            ${rutaImagen3 ? `<img src="${rutaImagen3}" style="width:48%;height:auto;">` : ''}
+          </div>
+        </div>
+      `;
+
+      contenedor.innerHTML += html;
+      fichasGeneradas.push({ sku: sku || '', html: html });
+    });
+  }
+</script>
+<!-- FIN DEL CÓDIGO MODIFICADO -->
 </body>
 </html>
